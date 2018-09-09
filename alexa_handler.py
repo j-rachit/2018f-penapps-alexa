@@ -1,8 +1,12 @@
+import testingIntent
+import testingIntent
+
 db_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3QiLCJyb2xlIjoicGF0aWVudCIsImlhdCI6MTUzNjQzNjQxOSwiZXhwIjoxNTk5NTA4NDE5fQ.z7eRo6TiGrhEW5dK2_-V6d2MK8hT40RZ-ztecYjIjPQ"
 
 def lambda_handler(event, context):
     request = event
     print event
+    response = None
     if request["request"]["type"] == "LaunchRequest":
         return {
             "version": "1.0",
@@ -16,36 +20,13 @@ def lambda_handler(event, context):
                 "shouldEndSession": False
             }
         }
-    if "value" not in request["request"]["intent"]["slots"]["name"]:
-        return {
-            "version": "1.0",
-            "response": {
-                "outputSpeech": {
-                    "type": "SSML",
-                    "ssml": "<speak>What name do you want to test?</speak>",
-                },
-                "shouldEndSession": False,
-                "directives": [
-                    {
-                        "type": "Dialog.ElicitSlot",
-                        "slotToElicit": "name",
-                    }
-                ],
-            }
-        }
-    name = request["request"]["intent"]["slots"]["name"]["value"]
-    return {
-        "version": "1.0",
-        "response": {
-            "outputSpeech": {
-                "type": "SSML",
-                "ssml": "<speak>The Name you gave to me <emphasis level='strong'>Rachit</emphasis> is <say-as interpret-as='characters'>{}</say-as></speak>".format(
-                    name),
-            },
-        },
-        "shouldEndSession": True
-    }
-
-
+    if request["request"]["type"] == "IntentRequest":
+        if request["request"]["intent"]["name"] == "testing":
+            response = testingIntent.testingIntentHandler(event, context)
+        elif request["request"]["intent"]["name"] == "pendingMedication":
+            response = pendingMedicationIntent.pendingMedicationIntentHandler(event, context, db_token)
+        elif request["request"]["intent"]["name"] == "takenMedicine":
+            response =
+    return response
 if __name__ == "__main__":
     lambda_handler("test", "hi")
